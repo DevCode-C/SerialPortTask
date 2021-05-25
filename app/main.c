@@ -4,11 +4,20 @@
 #include "stm32f070xb.h"
 #include "stm32f0xx_hal_conf.h"
 #include "funciones.h"
+#include "string.h"
 
 /**------------------------------------------------------------------------------------------------
 Brief.- Punto de entrada del programa
 -------------------------------------------------------------------------------------------------*/
 UART_HandleTypeDef UartHandle;
+
+uint8_t msg[] = "BIenvenidos y Hola mundo\n\r";
+__IO ITStatus uartState = SET;
+__IO ITStatus status = RESET;
+
+uint8_t RxByte;
+uint8_t RxBuffer[20];
+
 int main( void )
 {
     HAL_Init( );
@@ -22,13 +31,37 @@ int main( void )
     UartHandle.Init.OverSampling    = UART_OVERSAMPLING_16;
 
     HAL_UART_Init(&UartHandle);
+    HAL_UART_Receive_IT(&UartHandle,&RxByte,1);
 
     for (; ;)
     {
-        HAL_UART_Transmit(&UartHandle,(uint8_t *)"Hola mundo\n\r",sizeof("Hola mundo\n\r")-1,100);
-        HAL_Delay(1000);
+        if(status == SET)
+        {
+            status = RESET;
+            HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_5);
+            HAL_UART_Transmit_IT(&UartHandle,RxBuffer,strlen((const char *)RxBuffer));
+        }   
     }
     
     return 0u;
+}
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+    uartState = SET;
+    memset(RxBuffer,0,sizeof(RxBuffer)-1);
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+    static uint32_t i = 0;
+    RxBuffer[i] = RxByte;
+    i++;
+    if(RxBuffer[i-1] == '\r')
+    {
+        status = SET;
+        i=0;
+    }
+    HAL_UART_Receive_IT(&UartHandle,&RxByte,1);
 }
 

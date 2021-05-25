@@ -42,3 +42,12 @@ void SysTick_Handler( void )
 {
     HAL_IncTick( );
 }
+
+/**------------------------------------------------------------------------------------------------
+Brief.- Punto de entrada del programa
+-------------------------------------------------------------------------------------------------*/
+extern UART_HandleTypeDef UartHandle;
+void USART2_IRQHandler(void)
+{
+    HAL_UART_IRQHandler(&UartHandle);
+}
