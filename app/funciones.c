@@ -29,21 +29,23 @@ void UART_Init()
     HAL_UART_Receive_IT(&UartHandle,&RxByte,1);
 }
 
-void task(uint32_t *tick, uint16_t *counter)
+void task(uint32_t *tick)
 {
+    uint8_t portValue = 0;
     *tick = HAL_GetTick();
     uartState = RESET;
-    HAL_GPIO_WritePin(GPIOC,*counter,GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOC,~(*counter),GPIO_PIN_RESET);
     HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_5);
-    sprintf((char *)RxBuffer,"Val: %d\n",*counter);
+
+    portValue  = HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_0);
+    portValue += HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_1)<<1;
+    portValue += HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_8)<<2;
+    portValue += HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_9)<<3;
+    portValue += HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_11)<<4;
+    portValue += HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_12)<<5;
+
+
+    sprintf((char *)RxBuffer,"Val: %d\n",portValue);
     HAL_UART_Transmit_IT(&UartHandle,RxBuffer,strlen((const char *)RxBuffer));
-    *counter += 1;
-    // if (*counter > 500)
-    if (*counter > 9)
-    {
-        *counter = 0;
-    }
 }
 
 

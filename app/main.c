@@ -22,13 +22,12 @@ int main( void )
 {
     HAL_Init( );
     UART_Init();
-    uint16_t counter = 0;
     uint32_t tick  = HAL_GetTick();
     for (; ;)
     {
-        if((uartState == SET) && ((HAL_GetTick() - tick) > 1000 ))
+        if((uartState == SET) && ((HAL_GetTick() - tick) > 100 ))
         {
-            task(&tick,&counter);
+            task(&tick);
         }  
     } 
     return 0u;
