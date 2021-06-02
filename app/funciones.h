@@ -6,7 +6,7 @@
 
 
 
-    void task(uint32_t *tick);
+    void task(uint32_t *tick, uint16_t *pinValue);
 
     void UART_Init(void);
 

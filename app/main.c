@@ -22,12 +22,19 @@ int main( void )
 {
     HAL_Init( );
     UART_Init();
+    uint16_t pinvalue = 1;
     uint32_t tick  = HAL_GetTick();
+    uint32_t tick2  = HAL_GetTick();
     for (; ;)
     {
-        if((uartState == SET) && ((HAL_GetTick() - tick) > 100 ))
+        if((uartState == SET) && ((HAL_GetTick() - tick) > 2000 ))
         {
-            task(&tick);
+            task(&tick, &pinvalue);
+        }
+        if((HAL_GetTick() - tick2) > 300 )
+        {
+            tick2  = HAL_GetTick();
+            HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_5);
         }  
     } 
     return 0u;

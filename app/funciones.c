@@ -29,23 +29,51 @@ void UART_Init()
     HAL_UART_Receive_IT(&UartHandle,&RxByte,1);
 }
 
-void task(uint32_t *tick)
+void task(uint32_t *tick, uint16_t *pinValue)
 {
-    uint8_t portValue = 0;
+    static FlagStatus flag = SET;
     *tick = HAL_GetTick();
     uartState = RESET;
-    HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_5);
+    uint8_t palabra[10] = {0};;
 
-    portValue  = HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_0);
-    portValue += HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_1)<<1;
-    portValue += HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_8)<<2;
-    portValue += HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_9)<<3;
-    portValue += HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_11)<<4;
-    portValue += HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_12)<<5;
+    HAL_GPIO_WritePin(GPIOC,*pinValue,GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOC,~(*pinValue),GPIO_PIN_RESET);
 
+    for (uint8_t i = 0; i < 8; i++)
+    {
+        if ( (*pinValue) & (1<<(7-i)) ) 
+        {
+            palabra[i] = '1';
+        }
+        else
+        {
+            palabra[i] = '0';
+        }    
+    }    
 
-    sprintf((char *)RxBuffer,"Val: %d\n",portValue);
+    sprintf((char *)RxBuffer,"Val: %s\n",palabra);
     HAL_UART_Transmit_IT(&UartHandle,RxBuffer,strlen((const char *)RxBuffer));
+    
+    if (flag)
+    {
+        *pinValue <<=1;
+        if (*pinValue == 128)
+        {
+            flag = RESET;
+        }
+        
+    }
+    else
+    {
+        *pinValue >>= 1;
+        if (*pinValue == 1)
+        {
+            flag = SET;
+        }
+        
+    }
+    
+    
 }
 
 
