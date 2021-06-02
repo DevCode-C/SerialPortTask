@@ -9,7 +9,7 @@
 // #define TASK 1
 extern UART_HandleTypeDef UartHandle;
 uint8_t RxByte;
-uint8_t RxBuffer[20];
+uint8_t RxBuffer[40];
 
 extern __IO ITStatus uartState;
 extern __IO ITStatus status;
@@ -51,7 +51,7 @@ void task(uint32_t *tick, uint16_t *pinValue)
         }    
     }    
 
-    sprintf((char *)RxBuffer,"Val: %s\n",palabra);
+    sprintf((char *)RxBuffer,"Val: %s, SysCoreClock =%ld \n",palabra,SystemCoreClock);
     HAL_UART_Transmit_IT(&UartHandle,RxBuffer,strlen((const char *)RxBuffer));
     
     if (flag)
@@ -71,9 +71,7 @@ void task(uint32_t *tick, uint16_t *pinValue)
             flag = SET;
         }
         
-    }
-    
-    
+    } 
 }
 
 
