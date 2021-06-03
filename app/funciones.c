@@ -26,7 +26,7 @@ void UART_Init()
     UartHandle.Init.OverSampling    = UART_OVERSAMPLING_16;
 
     HAL_UART_Init(&UartHandle);
-    // HAL_UART_Receive_IT(&UartHandle,&RxByte,1);
+    HAL_UART_Receive_IT(&UartHandle,&RxByte,1);
 }
 
 

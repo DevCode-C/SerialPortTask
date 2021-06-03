@@ -14,9 +14,8 @@ Brief.- Punto de entrada del programa
 
 UART_HandleTypeDef UartHandle;
 __IO ITStatus uartState = RESET;
-// __IO ITStatus status = RESET;
-uint8_t status;
-extern uint8_t RxBuffer[10];
+__IO ITStatus status = RESET;
+extern uint8_t RxBuffer[20];
 
 
 int main( void )
@@ -26,18 +25,23 @@ int main( void )
 
     for (; ;)
     {
-        status = HAL_UART_Receive(&UartHandle,RxBuffer,4,5000);
-        if (status == HAL_OK)
+        if (status == SET)
         {
-            if (!memcmp("led\r",RxBuffer,sizeof("led\r")-1))
+            status = RESET;
+            if (!memcmp("uno\r",RxBuffer,sizeof("uno\r")-1))
             {
-                HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_3);
+                HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_0);
+            }
+            else if (!memcmp("dos\r",RxBuffer,sizeof("dos\r")-1))
+            {
+                HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_1);
+            }
+            else if (!memcmp("tres\r",RxBuffer,sizeof("tres\r")-1))
+            {
+                HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_2);
             }
         }
-        else
-        {
-            HAL_UART_Transmit(&UartHandle,(uint8_t*)"Timeout\r\n",9,500);
-        }
+        
     } 
     return 0u;
 }
