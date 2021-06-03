@@ -26,25 +26,10 @@ void UART_Init()
     UartHandle.Init.OverSampling    = UART_OVERSAMPLING_16;
 
     HAL_UART_Init(&UartHandle);
-    HAL_UART_Receive_IT(&UartHandle,&RxByte,1);
+    // HAL_UART_Receive_IT(&UartHandle,&RxByte,1);
 }
 
-void task(uint32_t *tick, uint16_t *counter)
-{
-    *tick = HAL_GetTick();
-    uartState = RESET;
-    HAL_GPIO_WritePin(GPIOC,*counter,GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOC,~(*counter),GPIO_PIN_RESET);
-    HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_5);
-    sprintf((char *)RxBuffer,"Val: %d\n",*counter);
-    HAL_UART_Transmit_IT(&UartHandle,RxBuffer,strlen((const char *)RxBuffer));
-    *counter += 1;
-    // if (*counter > 500)
-    if (*counter > 9)
-    {
-        *counter = 0;
-    }
-}
+
 
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
