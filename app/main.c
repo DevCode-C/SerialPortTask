@@ -1,6 +1,7 @@
 #include "stm32f0xx.h"
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "app_bsp.h"
 #include "stm32f070xb.h"
 #include "stm32f0xx_hal_conf.h"
@@ -16,7 +17,7 @@ UART_HandleTypeDef UartHandle;
 __IO ITStatus uartState = RESET;
 __IO ITStatus status = RESET;
 extern uint8_t RxBuffer[20];
-
+uint16_t timedelay= 100;
 
 int main( void )
 {
@@ -28,19 +29,20 @@ int main( void )
         if (status == SET)
         {
             status = RESET;
-            if (!memcmp("uno\r",RxBuffer,sizeof("uno\r")-1))
+            timedelay = atoi((const char *)RxBuffer);
+            if (timedelay > 999 || timedelay < 10)
             {
-                HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_0);
+                timedelay= 100;
+                HAL_UART_Transmit_IT(&UartHandle,(uint8_t*)"Numero no valido\r\n",sizeof("Numero no valido\r\n")-1);
             }
-            else if (!memcmp("dos\r",RxBuffer,sizeof("dos\r")-1))
+            else
             {
-                HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_1);
+                HAL_UART_Transmit_IT(&UartHandle,(uint8_t*)"Numero valido\r\n",sizeof("Numero valido\r\n")-1);
             }
-            else if (!memcmp("tres\r",RxBuffer,sizeof("tres\r")-1))
-            {
-                HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_2);
-            }
+            
         }
+        HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_5);
+        HAL_Delay(timedelay);
         
     } 
     return 0u;
