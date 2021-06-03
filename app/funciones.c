@@ -6,10 +6,9 @@
 #include "stm32f0xx_hal_rcc.h"
 #include "funciones.h"
 
-// #define TASK 1
 extern UART_HandleTypeDef UartHandle;
 uint8_t RxByte;
-uint8_t RxBuffer[40];
+uint8_t RxBuffer[50];
 
 extern __IO ITStatus uartState;
 extern __IO ITStatus status;
@@ -34,14 +33,14 @@ void task(uint32_t *tick, uint16_t *pinValue)
     static FlagStatus flag = SET;
     *tick = HAL_GetTick();
     uartState = RESET;
-    uint8_t palabra[10] = {0};;
+    uint8_t palabra[18] = {0};;
 
     HAL_GPIO_WritePin(GPIOC,*pinValue,GPIO_PIN_SET);
     HAL_GPIO_WritePin(GPIOC,~(*pinValue),GPIO_PIN_RESET);
 
-    for (uint8_t i = 0; i < 8; i++)
+    for (uint8_t i = 0; i < (sizeof(*pinValue)*8); i++)
     {
-        if ( (*pinValue) & (1<<(7-i)) ) 
+        if ( (*pinValue) & (1<<(((sizeof(*pinValue)*8 )-1)-i)) ) 
         {
             palabra[i] = '1';
         }
@@ -51,7 +50,7 @@ void task(uint32_t *tick, uint16_t *pinValue)
         }    
     }    
 
-    sprintf((char *)RxBuffer,"Val: %s, SysCoreClock =%ld \n",palabra,SystemCoreClock);
+    sprintf((char *)RxBuffer,"Val: %s \n",palabra);
     HAL_UART_Transmit_IT(&UartHandle,RxBuffer,strlen((const char *)RxBuffer));
     
     if (flag)
