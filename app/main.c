@@ -7,6 +7,7 @@
 #include "string.h"
 #include "stm32f0xx_hal.h"
 #include "funciones.h"
+#include <ctype.h>
 
 /**------------------------------------------------------------------------------------------------
 Brief.- Punto de entrada del programa
@@ -28,18 +29,15 @@ int main( void )
         if (status == SET)
         {
             status = RESET;
-            if (!memcmp("uno\r",RxBuffer,sizeof("uno\r")-1))
+            if (isdigit(RxBuffer[0]))
             {
                 HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_0);
             }
-            else if (!memcmp("dos\r",RxBuffer,sizeof("dos\r")-1))
+            else
             {
-                HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_1);
+                HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_1);   
             }
-            else if (!memcmp("tres\r",RxBuffer,sizeof("tres\r")-1))
-            {
-                HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_2);
-            }
+            
         }
         
     } 
