@@ -17,7 +17,7 @@ UART_HandleTypeDef UartHandle;
 __IO ITStatus uartState = RESET;
 __IO ITStatus status = RESET;
 extern uint8_t RxBuffer[20];
-uint16_t timedelay= 100;
+int16_t timedelay= 100;
 
 int main( void )
 {
@@ -30,7 +30,7 @@ int main( void )
         {
             status = RESET;
             timedelay = atoi((const char *)RxBuffer);
-            if (timedelay > 999 || timedelay < 10)
+            if ((timedelay > 999 || timedelay < 10) || (timedelay < 0))
             {
                 timedelay= 100;
                 HAL_UART_Transmit_IT(&UartHandle,(uint8_t*)"Numero no valido\r\n",sizeof("Numero no valido\r\n")-1);
