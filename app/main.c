@@ -13,7 +13,6 @@
 Brief.- Punto de entrada del programa
 -------------------------------------------------------------------------------------------------*/
 
-UART_HandleTypeDef UartHandle;
 __IO ITStatus uartState = RESET;
 __IO ITStatus status = RESET;
 extern uint8_t RxBuffer[20];
